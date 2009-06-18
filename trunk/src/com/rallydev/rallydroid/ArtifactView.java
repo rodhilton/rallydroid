@@ -16,27 +16,12 @@
   
 package com.rallydev.rallydroid;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.rallydev.rallydroid.dto.Artifact;
-
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.rallydev.rallydroid.dto.Artifact;
 
 public class ArtifactView extends RallyActivity {
 	public void onCreate(Bundle savedInstanceState) {

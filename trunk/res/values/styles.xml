@@ -9,4 +9,5 @@
   </style> 
 <color name="rally_yellow">#FFebebd8</color>
 <color name="rally_red">#ef3f35</color>
+<style name="RallyTheme"></style>
 </resources> 
