@@ -1,0 +1,22 @@
+<LinearLayout android:id="@+id/LinearLayout01" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+<ScrollView android:id="@+id/ScrollView" android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical"><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/task_nameView" android:text="Task Name" android:textSize="16sp" android:padding="5sp" android:textStyle="bold" android:shadowRadius="2" android:shadowDx="2" android:shadowDy="2" android:shadowColor="#c0c0c0"></TextView>
+<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="5sp" android:text="Description:" android:textStyle="bold"></TextView>
+
+
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="description" android:padding="5sp" android:id="@+id/task_descriptionView" android:clickable="false" android:ellipsize="none" android:scrollbars="vertical" android:singleLine="false"></TextView><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/task_blockedView" android:padding="5sp" android:textStyle="bold" android:text="BLOCKED"></TextView>
+
+<TableLayout android:id="@+id/TableLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:shrinkColumns="0" android:stretchColumns="1" android:padding="5px"><TableRow android:id="@+id/TableRow01" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:text="State:"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="5sp" android:id="@+id/task_stateView"></TextView>
+</TableRow><TableRow android:id="@+id/TableRow01" android:layout_width="wrap_content" android:layout_height="wrap_content"><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Estimate:" android:textStyle="bold"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/task_estimateView" android:padding="5sp"></TextView>
+</TableRow><TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TableRow02"><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:text="To do:"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/task_todoView" android:padding="5sp"></TextView>
+</TableRow>
+</TableLayout>
+
+</LinearLayout>
+</ScrollView>
+
+</LinearLayout>

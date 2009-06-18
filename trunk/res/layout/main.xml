@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+
+<ImageView android:layout_width="fill_parent" android:background="@drawable/headback" android:layout_height="wrap_content" android:id="@+id/logoView" android:src="@drawable/logo" android:clickable="false" android:focusable="false" android:padding="10px"></ImageView>
+<TextView android:layout_height="wrap_content" android:id="@+id/main_statusLabel" android:padding="5px" android:layout_width="fill_parent"></TextView><Button
+android:id="@+id/planningPokerButton"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="Planning Poker"
+/>
+<Button
+android:id="@+id/myTasksButton"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="My Tasks"
+/>
+<Button
+android:id="@+id/iterationStatusButton"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="Iteration Status"
+/>
+
+
+</LinearLayout> 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<resources> 
+  <style name="BaseText"> 
+    <item name="android:textSize">14sp</item> 
+    <item name="android:textColor">#111</item> 
+  </style> 
+  <style name="SmallText" parent="BaseText"> 
+    <item name="android:textSize">5sp</item> 
+  </style> 
+<color name="rally_yellow">#FFebebd8</color>
+<color name="rally_red">#ef3f35</color>
+</resources> 

@@ -1,0 +1,8 @@
+
+<RelativeLayout android:id="@+id/RelativeLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android"><LinearLayout android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/settingsLayout" android:orientation="vertical" android:layout_width="fill_parent">
+
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/usernameLabel" android:text="Username:"></TextView><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/usernameEdit"></EditText></LinearLayout><LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Password:" android:id="@+id/passwordLabel"></TextView><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:password="true" android:id="@+id/passwordEdit"></EditText></LinearLayout>
+
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save" android:id="@+id/saveButton"></Button>
+</LinearLayout>
+</RelativeLayout>
