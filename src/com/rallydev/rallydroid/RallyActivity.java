@@ -16,12 +16,13 @@
   
 package com.rallydev.rallydroid;
 
+import static com.rallydev.rallydroid.Preferences.PASSWORD;
+import static com.rallydev.rallydroid.Preferences.USERNAME;
+
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -33,15 +34,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.rallydev.rallydroid.dto.Iteration;
-import com.rallydev.rallydroid.dto.Story;
-import com.rallydev.rallydroid.dto.User;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import static com.rallydev.rallydroid.Preferences.*;
+
+import com.rallydev.rallydroid.dto.Iteration;
+import com.rallydev.rallydroid.dto.Story;
+import com.rallydev.rallydroid.dto.User;
 
 public abstract class RallyActivity extends Activity {
 
