@@ -100,6 +100,10 @@ public abstract class RallyActivity extends Activity {
 	protected User getUser() {
 		if(this.user != null) return user;
 		
+		if(getUserName() == null || getPassword() == null) {
+			return null;
+		}
+			
         try { 
         	JSONObject adHocQuery = new JSONObject();
         	adHocQuery.put("#user", "/user");
