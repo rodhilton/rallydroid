@@ -18,13 +18,22 @@ package com.rallydev.rallydroid.dto;
 
 import java.io.Serializable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Artifact implements Serializable {
-	public Artifact(String type, String ref, String formattedID, Integer oid) {
+	public Artifact(JSONObject object) {
 		super();
-		this.type = type;
-		this.ref = ref;
-		this.formattedID = formattedID;
-		this.oid = oid;
+		this.object = object;
+		try {
+			this.type = object.getString("_type");
+			this.ref = object.getString("_ref");
+			this.formattedID = object.getString("FormattedID");
+			this.oid = object.getInt("ObjectID");
+			this.name = object.getString("Name");
+		} catch(JSONException e) {
+			throw new IllegalArgumentException("Object not correctly populated", e);
+		}
 	}
 	public String getFormattedID() {
 		return formattedID;
@@ -42,4 +51,29 @@ public class Artifact implements Serializable {
 	private String ref;
 	private Integer oid;
 	private String type;
+	private String name;
+	private JSONObject object;
+	
+	public String getString(String name) {
+		try {
+			return object.getString(name);
+		}catch(JSONException e) {
+			throw new IllegalArgumentException(name+" is not available", e);
+		}
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public String toString() {
+		return String.format("%s: %s", formattedID, name);
+	}
+	public boolean getBoolean(String string) {
+		try {
+			return object.getBoolean(name);
+		}catch(JSONException e) {
+			return false;
+		}
+	}
 }

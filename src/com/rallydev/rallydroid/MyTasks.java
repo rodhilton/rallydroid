@@ -28,19 +28,28 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.rallydev.rallydroid.dto.Artifact;
 
 public class MyTasks extends RallyActivity {
-    @Override
+    private ArrayAdapter<Artifact> aa;
+	private ArrayList<Artifact> tasks;
+	static final private int TASK_DIALOG=1;
+	Artifact selectedTask;
+
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
@@ -50,81 +59,109 @@ public class MyTasks extends RallyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.artifactlist);
         
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        httpclient.getCredentialsProvider().setCredentials(
-        new AuthScope(null, 443),
-        new UsernamePasswordCredentials(getUserName(), getPassword()));
-        
-        final ArrayList<String> taskStrings = new ArrayList<String>();
-        final ArrayList<Artifact> taskRefs = new ArrayList<Artifact>();
-        // Create the array adapter to bind the array to the listview 
-        final ArrayAdapter<String> aa; 
-        aa = new ArrayAdapter<String>(this, 
-                                      android.R.layout.simple_list_item_1, 
-                                      taskStrings); 
-
-        //HttpGet httpget = new HttpGet("https://test1cluster.rallydev.com/slm/webservice/1.11/task.js?query=((Owner+=+"+getUserName()+")+and+(State+!=+Completed))&fetch=true");
-        HttpGet httpget = new HttpGet("https://test1cluster.rallydev.com/slm/webservice/1.11/task.js?query=((Owner+=+"+getUserName()+")+and+(State+!=+Completed))&fetch=true&pretty=true");
-
-        Log.d("test", "executing request" + httpget.getRequestLine());
-        try {
-        HttpResponse response = httpclient.execute(httpget);
-
-        Log.d("test", response.getStatusLine().toString());
-        HttpEntity entity = response.getEntity();
-
-        InputStream is = entity.getContent();
-        String blah = Util.slurp(is);
-
-        Log.d("stuff", blah);
-        
-
-        JSONObject array = new JSONObject(blah);
-        JSONObject queryResult = array.getJSONObject("QueryResult");
-        JSONArray results = queryResult.getJSONArray("Results");
-        for(int i = 0 ; i< results.length() ; i++) {
-        Log.d("result", results.get(i).toString());
-        JSONObject object = (JSONObject) results.get(i);
-        taskStrings.add(object.getString("FormattedID")+": "+object.getString("Name"));
-        Artifact artifact=new Artifact(object.getString("_type"), object.getString("_ref"), object.getString("FormattedID"), object.getInt("ObjectID"));
-        taskRefs.add(artifact);
-        //String type, String ref, String formattedID, Integer oid)
-        }
-        //array.
-        // When HttpClient instance is no longer needed,
-        // shut down the connection manager to ensure
-        // immediate deallocation of all system resources
-        httpclient.getConnectionManager().shutdown();
-       
-        
         ListView myListView = (ListView) findViewById(R.id.myListView);
         
-        //myImageview.setImageResource(R.drawable.logo);
-        
-        // Create the array list of to do items 
-      
-        // Bind the array adapter to the listview. 
+        tasks = new ArrayList<Artifact>();
+        int layoutID = android.R.layout.simple_list_item_1;
+        aa = new ArrayAdapter<Artifact>(this,layoutID,tasks);
         myListView.setAdapter(aa);
-        
+  
+        refreshTasks();
+             
         myListView.setOnItemClickListener(new OnItemClickListener() {
 
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				Log.d("test",arg1.toString());
-				Log.d("test2",""+arg2);
-				
-				launchArtifactView(taskRefs.get(arg2));		
+			public void onItemClick(AdapterView<?> arg0, View arg1, int index,
+					long arg3) {				
+				selectedTask = tasks.get(index);
+				showDialog(TASK_DIALOG);
 			}
         	
         });
-        
+ 
+
+    }
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+			case TASK_DIALOG:
+				LayoutInflater li = LayoutInflater.from(this);
+				View taskView = li.inflate(R.layout.view_task, null);
+				
+				AlertDialog.Builder taskDialog = new AlertDialog.Builder(this);
+				taskDialog.setTitle("View Task");
+				taskDialog.setView(taskView);
+				return taskDialog.create();
+		}
+		return null;
+	}
+
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		switch(id) {
+			case TASK_DIALOG:
+				dialog.setTitle(selectedTask.getFormattedID());
+				
+				TextView nameView = (TextView) dialog.findViewById(R.id.task_nameView);
+
+	        	nameView.setText(selectedTask.getName());
+	        	TextView descriptionView = (TextView) dialog.findViewById(R.id.task_descriptionView);
+	        	String description = selectedTask.getString("Description");
+	        	descriptionView.setText(description);
+	        	
+	        	String estimate=selectedTask.getString("Estimate");
+	        	String todo=selectedTask.getString("ToDo");
+	        	String state = selectedTask.getString("State");
+	        	
+	        	boolean blocked=selectedTask.getBoolean("Blocked");
+	        	
+	        	((TextView)dialog.findViewById(R.id.task_stateView)).setText(state);
+	        	((TextView)dialog.findViewById(R.id.task_estimateView)).setText(estimate);
+	        	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
+	        	
+	        	
+	        	TextView blockedView = (TextView) dialog.findViewById(R.id.task_blockedView);
+	        	if(blocked) {
+	        		blockedView.setText("BLOCKED");
+	        	} else {
+	        		blockedView.setText("Not blocked");
+	        	}
+		}
+	}
+
+	private void refreshTasks() {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+
+        httpclient.getCredentialsProvider().setCredentials(
+                new AuthScope(null, 443),
+                new UsernamePasswordCredentials(getUserName(), getPassword()));
+       
+        HttpGet httpget = new HttpGet("https://test1cluster.rallydev.com/slm/webservice/1.11/task.js?query=((Owner+=+"+getUserName()+")+and+(State+!=+Completed))&fetch=true&pretty=true");
+
+        try {
+	        HttpResponse httpResponse = httpclient.execute(httpget);
+	
+	        HttpEntity entity = httpResponse.getEntity();
+	
+	        InputStream is = entity.getContent();
+	        String response=Util.slurp(is);
+	        Log.d("Response", response);
+	        
+	        JSONObject array = new JSONObject(response);
+	        JSONObject queryResult = array.getJSONObject("QueryResult");
+	        JSONArray results = queryResult.getJSONArray("Results");
+	        for(int i = 0 ; i< results.length() ; i++) {
+		        JSONObject object = (JSONObject) results.get(i);
+		        tasks.add(new Artifact(object));
+	        }
+	        
+	        httpclient.getConnectionManager().shutdown();
 
         }catch(Exception e) {
         
         }
-
-    }
+	}
+	
 	
 	private void launchArtifactView(Artifact artifact) {
 		// TODO Auto-generated method stub
