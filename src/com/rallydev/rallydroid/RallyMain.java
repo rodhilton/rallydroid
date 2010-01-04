@@ -52,19 +52,27 @@ public class RallyMain extends RallyActivity {
         Button iterationStatusButton = (Button) findViewById(R.id.iterationStatusButton);
         iterationStatusButton.setOnClickListener(buildActivityChangeListener(IterationStatus.class));
         
-        TextView statusView = (TextView) findViewById(R.id.main_statusLabel);
-        User user = getUser();
+        ShowHideButtons();
+	}
+    
+    private void ShowHideButtons()
+    {
+    	User user = getHelper().getCurrentUser();
+    	TextView statusView = (TextView) findViewById(R.id.main_statusLabel);
+    	Button myTasksButton = (Button) findViewById(R.id.myTasksButton);
+    	Button iterationStatusButton = (Button) findViewById(R.id.iterationStatusButton);
         
         if(user == null) {
         	statusView.setText("Not logged in");
-        	myTasksButton.setEnabled(false);
-        	iterationStatusButton.setEnabled(false);
         } else {
 	        statusView.setText(String.format("Logged in as %s (%s)", user.getDisplayName(), user.getSubscriptionName()));
         }
-	}
+        
+        myTasksButton.setEnabled(user != null);
+    	iterationStatusButton.setEnabled(user != null);
+    }
 
-    private View.OnClickListener buildActivityChangeListener(final Class clazz) {
+    private View.OnClickListener buildActivityChangeListener(final Class<? extends Activity> clazz) {
         final Activity parent = this;
     	
     	return new View.OnClickListener() {
@@ -72,6 +80,7 @@ public class RallyMain extends RallyActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent(parent, clazz);
 				startActivity(intent);
+				ShowHideButtons();
 			}
         	
         };

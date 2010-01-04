@@ -17,47 +17,33 @@
 package com.rallydev.rallydroid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import com.rallydev.rallydroid.dto.Iteration;
 import com.rallydev.rallydroid.dto.Story;
 
-public class IterationStatus extends RallyActivity {
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		Iteration currentIteration = getCurrentIteration();
-        setContentView(R.layout.artifactlist);
-		
-        final ArrayList<String> todoItems = new ArrayList<String>(); 
-        // Create the array adapter to bind the array to the listview 
-        final ArrayAdapter<String> aa; 
-        aa = new ArrayAdapter<String>(this, 
-        		android.R.layout.simple_list_item_1, 
-                                      todoItems); 
-        
-		List<Story> stories = getStories();
-		
-		if(stories.size() == 0) {
-			Toast toast = Toast.makeText(getApplicationContext(), "No stories found", Toast.LENGTH_SHORT);
-			toast.show();
-			this.finish();
-		}
-		
-		for(Story story: stories) {
-			todoItems.add(String.format("%s: %s", story.getFormattedID(), story.getName()));
-		}
-		
-        ListView myListView = (ListView) findViewById(R.id.myListView);
-        
-        myListView.setAdapter(aa);
+public class IterationStatus extends RallyListActivity {
+	
+	private List<Story> stories;
+    
+	protected void loadDataFromStore()
+	{
+		stories = getHelper().getRallyConnection().getStoriesForCurrentIteration();
 	}
-
+	
+	protected List<Map<String, String>> fillDataForDrawing()
+    {
+		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        
+		for (Story story: stories)
+    	{
+        	Map<String, String> row = new HashMap<String, String>();
+        	row.put(LIST_ITEM_LINE1, story.getName());
+        	row.put(LIST_ITEM_LINE2, story.getFormattedID() + " (" + story.getStatus() + ")");
+        	data.add(row);
+        }
+        
+        return data;
+    }
 }

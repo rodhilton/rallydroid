@@ -40,6 +40,7 @@ public class ArtifactView extends RallyActivity {
 		setContentView(R.layout.view_task);
 		
 		try {
+        	/* DON'T THINK THIS IS USED ANYWHERE
         	JSONObject jsonObject = getResult(artifact.getRef()).getJSONObject("Task");
         	TextView nameView = (TextView) findViewById(R.id.task_nameView);
         	nameView.setText(String.format("%s: %s", jsonObject.getString("FormattedID"), jsonObject.getString("Name")));
@@ -66,7 +67,7 @@ public class ArtifactView extends RallyActivity {
         		blockedView.setText("Not blocked");
         	}
         		
-        	
+        	*/
         	
         }catch(Exception e) {
         	
