@@ -16,80 +16,76 @@
   
 package com.rallydev.rallydroid;
 
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.rallydev.rallydroid.dto.Artifact;
 
-public class MyTasks extends RallyActivity {
-    private ArrayAdapter<Artifact> aa;
-	private ArrayList<Artifact> tasks;
-	static final private int TASK_DIALOG=1;
-	Artifact selectedTask;
+public class MyTasks extends RallyListActivity {
+    private List<Artifact> tasks;
+    private Artifact selectedTask;
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
-		super.onSaveInstanceState(outState);
+    public void loadDataFromStore()
+	{
+		tasks = getHelper().getRallyConnection().getMyTasks();
 	}
-
-	public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.artifactlist);
+	
+	protected List<Map<String, String>> fillDataForDrawing()
+    {
+		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
         
-        ListView myListView = (ListView) findViewById(R.id.myListView);
-        
-        tasks = new ArrayList<Artifact>();
-        int layoutID = android.R.layout.simple_list_item_1;
-        aa = new ArrayAdapter<Artifact>(this,layoutID,tasks);
-        myListView.setAdapter(aa);
-  
-        refreshTasks();
-             
-        myListView.setOnItemClickListener(new OnItemClickListener() {
+		for (Artifact task: tasks)
+    	{
+        	Map<String, String> row = new HashMap<String, String>();
+        	row.put(LIST_ITEM_LINE1, task.getName());
+        	row.put(LIST_ITEM_LINE2, getTaskStoryName(task));
+        	data.add(row);
+        }
+		
+		return data;
+    }
+    
+    static final private int DETAIL_DIALOG=1;
+	
+	@Override
+	protected void PostCreate()
+	{
+		ListView myListView = (ListView) findViewById(getListViewResId());
+		myListView.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> arg0, View arg1, int index,
 					long arg3) {				
 				selectedTask = tasks.get(index);
-				showDialog(TASK_DIALOG);
+				showDialog(DETAIL_DIALOG);
 			}
         	
         });
- 
-
-    }
+	}
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
-			case TASK_DIALOG:
+			case DETAIL_DIALOG:
 				LayoutInflater li = LayoutInflater.from(this);
 				View taskView = li.inflate(R.layout.view_task, null);
 				
 				AlertDialog.Builder taskDialog = new AlertDialog.Builder(this);
-				taskDialog.setTitle("View Task");
+				taskDialog.setTitle("Detail View");
 				taskDialog.setView(taskView);
 				return taskDialog.create();
 		}
@@ -99,74 +95,36 @@ public class MyTasks extends RallyActivity {
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch(id) {
-			case TASK_DIALOG:
+			case DETAIL_DIALOG:
 				dialog.setTitle(selectedTask.getFormattedID());
 				
-				TextView nameView = (TextView) dialog.findViewById(R.id.task_nameView);
-
-	        	nameView.setText(selectedTask.getName());
-	        	TextView descriptionView = (TextView) dialog.findViewById(R.id.task_descriptionView);
 	        	String description = selectedTask.getString("Description");
-	        	descriptionView.setText(description);
-	        	
 	        	String estimate=selectedTask.getString("Estimate");
 	        	String todo=selectedTask.getString("ToDo");
-	        	String state = selectedTask.getString("State");
-	        	
+	        	String actuals=selectedTask.getString("Actuals");
 	        	boolean blocked=selectedTask.getBoolean("Blocked");
+	        	String state = selectedTask.getString("State") + " " + (blocked ? "(BLOCKED)" : "(Not blocked)");
 	        	
+				((TextView)dialog.findViewById(R.id.task_nameView)).setText(selectedTask.getName());
+				((TextView)dialog.findViewById(R.id.story_nameView)).setText(getTaskStoryName(selectedTask));
+				((TextView)dialog.findViewById(R.id.task_descriptionView)).setText(description);
 	        	((TextView)dialog.findViewById(R.id.task_stateView)).setText(state);
 	        	((TextView)dialog.findViewById(R.id.task_estimateView)).setText(estimate);
 	        	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
-	        	
-	        	
-	        	TextView blockedView = (TextView) dialog.findViewById(R.id.task_blockedView);
-	        	if(blocked) {
-	        		blockedView.setText("BLOCKED");
-	        	} else {
-	        		blockedView.setText("Not blocked");
-	        	}
+	        	((TextView)dialog.findViewById(R.id.task_actualView)).setText(actuals);
 		}
 	}
-
-	private void refreshTasks() {
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        httpclient.getCredentialsProvider().setCredentials(
-                new AuthScope(null, 443),
-                new UsernamePasswordCredentials(getUserName(), getPassword()));
-       
-        HttpGet httpget = new HttpGet("https://test1cluster.rallydev.com/slm/webservice/1.11/task.js?query=((Owner+=+"+getUserName()+")+and+(State+!=+Completed))&fetch=true&pretty=true");
-
-        try {
-	        HttpResponse httpResponse = httpclient.execute(httpget);
 	
-	        HttpEntity entity = httpResponse.getEntity();
-	
-	        InputStream is = entity.getContent();
-	        String response=Util.slurp(is);
-	        Log.d("Response", response);
-	        
-	        JSONObject array = new JSONObject(response);
-	        JSONObject queryResult = array.getJSONObject("QueryResult");
-	        JSONArray results = queryResult.getJSONArray("Results");
-	        for(int i = 0 ; i< results.length() ; i++) {
-		        JSONObject object = (JSONObject) results.get(i);
-		        tasks.add(new Artifact(object));
-	        }
-	        
-	        httpclient.getConnectionManager().shutdown();
-
-        }catch(Exception e) {
-        
-        }
-	}
-	
-	
-	private void launchArtifactView(Artifact artifact) {
-		// TODO Auto-generated method stub
-		Intent intent = new Intent(this, ArtifactView.class);
-		intent.putExtra("Artifact", artifact);
-		startActivity(intent);
+	private String getTaskStoryName(Artifact task)
+	{
+		String storyName = "";
+    	try {
+    		String storyJson = task.getString("WorkProduct");
+        	JSONObject storyObj = new JSONObject(storyJson);
+			storyName = storyObj.getString("_refObjectName");
+		} catch (JSONException e) {
+			Log.e("Task View", e.getMessage());
+		}
+		return storyName;
 	}
 }
