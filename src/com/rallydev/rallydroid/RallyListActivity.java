@@ -8,22 +8,31 @@ import java.util.Map;
 import com.rallydev.rallydroid.dto.Artifact;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public abstract class RallyListActivity extends ListActivity {
 	
 	static final protected String LIST_ITEM_LINE1 = "line1";
 	static final protected String LIST_ITEM_LINE2 = "line2";
 	
+	private static final int DETAIL_DIALOG = 1;
+	
 	private ProgressDialog mLoadingDialog;
     private final Handler mHandler = new Handler();
     private String mErrorMsg = "";
     private List<Artifact> items;
+    private Artifact selectedItem;
 	
 	private ActivityHelper helper;
 	protected ActivityHelper getHelper()
@@ -41,9 +50,46 @@ public abstract class RallyListActivity extends ListActivity {
 		
 		setContentView(getLayoutResId());
 		
-		PostCreate();
+		PrepareItemClickHandler();
 		
 		refreshData();
+	}
+	
+	private void PrepareItemClickHandler()
+	{
+		ListView myListView = (ListView) findViewById(getListViewResId());
+		myListView.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> arg0, View arg1, int index,
+					long arg3) {				
+				selectedItem = getItemAt(index);
+				showDialog(DETAIL_DIALOG);
+			}
+	        	
+	    });
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+			case DETAIL_DIALOG:
+				LayoutInflater li = LayoutInflater.from(this);
+				View detailView = li.inflate(getDetailViewResId(), null);
+				
+				AlertDialog.Builder detailDialog = new AlertDialog.Builder(this);
+				detailDialog.setTitle("Detail View");
+				detailDialog.setView(detailView);
+				return detailDialog.create();
+		}
+		return null;
+	}
+
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		switch(id) {
+			case DETAIL_DIALOG:
+				PrepareDetailDialog(dialog, selectedItem);
+		}
 	}
 	
 	protected void refreshData()
@@ -67,6 +113,11 @@ public abstract class RallyListActivity extends ListActivity {
 			return null;
 		
 		return items.get(index);
+	}
+	
+	protected Artifact getSelectedItem()
+	{
+		return selectedItem;
 	}
 	
 	protected void setError(String errorMsg)
@@ -116,8 +167,10 @@ public abstract class RallyListActivity extends ListActivity {
     
     protected int getListLayoutResId() { return android.R.layout.two_line_list_item; }
     
-    protected void PostCreate() {}
-	
+    protected int getDetailViewResId() { return 0; }
+    
+    protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {}
+    
     protected int getLayoutResId() { return R.layout.artifactlist; };
     
     protected abstract String getActivityTitle();

@@ -21,6 +21,8 @@ import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class Artifact implements Serializable {
 	private String formattedID;
 	private String ref;
@@ -67,7 +69,8 @@ public class Artifact implements Serializable {
 		try {
 			return object.getString(name);
 		}catch(JSONException e) {
-			throw new IllegalArgumentException(name+" is not available", e);
+			Log.e("json", name+" is not a valid property");
+			return "";
 		}
 	}
 	public String toString() {
