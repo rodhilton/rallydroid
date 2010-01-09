@@ -17,11 +17,24 @@
 
 package com.rallydev.rallydroid.dto;
 
-import org.json.JSONObject;
+import java.io.Serializable;
 
-public class Iteration extends Artifact {
-	public Iteration(JSONObject object) {
-		super(object);
+public class Iteration implements Serializable {
+	public Iteration(String name, Integer oid) {
+		super();
+		this.name = name;
+		this.oid = oid;
+	}
+	
+	private Integer oid;
+	private String name;
+	
+	public Integer getOid() {
+		return oid;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	/**
