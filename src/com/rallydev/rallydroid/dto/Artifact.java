@@ -22,6 +22,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Artifact implements Serializable {
+	private String formattedID;
+	private String ref;
+	private Integer oid;
+	private String type;
+	private String name;
+	protected JSONObject object;
+	
 	public Artifact()
 	{
 		super();
@@ -52,12 +59,9 @@ public class Artifact implements Serializable {
 	public String getType() {
 		return type;
 	}
-	private String formattedID;
-	private String ref;
-	private Integer oid;
-	private String type;
-	private String name;
-	protected JSONObject object;
+	public String getName() {
+		return name;
+	}
 	
 	public String getString(String name) {
 		try {
@@ -66,11 +70,6 @@ public class Artifact implements Serializable {
 			throw new IllegalArgumentException(name+" is not available", e);
 		}
 	}
-	
-	public String getName() {
-		return name;
-	}
-	
 	public String toString() {
 		return String.format("%s: %s", formattedID, name);
 	}

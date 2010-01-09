@@ -17,33 +17,89 @@
 package com.rallydev.rallydroid;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import android.view.Menu;
+import android.view.MenuItem;
+
+import com.rallydev.rallydroid.dto.Artifact;
 import com.rallydev.rallydroid.dto.Story;
 
 public class IterationStatus extends RallyListActivity {
-	
+	private final int MENU_OPEN = 1;
+    private final int MENU_COMPLETED = 2;
+    private final int MENU_ALL = 4;
+    private final int MENU_REFRESH = 10;
+    private int filterSelected = MENU_OPEN;
+
 	private List<Story> stories;
     
-	protected void loadDataFromStore()
+	protected List<Artifact> loadData()
 	{
-		stories = getHelper().getRallyConnection().getStoriesForCurrentIteration();
+		if (stories == null)
+    	{
+			stories = getHelper().getRallyConnection().getStoriesForCurrentIteration();
+    	}
+    	
+    	List<Artifact> ret = new ArrayList<Artifact>();
+    	for (Artifact story: stories)
+    	{
+    		String state = ((Story)story).getStatus();
+    		if ((filterSelected == MENU_COMPLETED && !state.equals("Completed") && !state.equals("Accepted"))
+    			|| (filterSelected == MENU_OPEN && (state.equals("Completed") || state.equals("Accepted"))))
+        			continue;
+        		
+    		ret.add(story);
+    	}
+    	
+    	return ret;
 	}
 	
-	protected List<Map<String, String>> fillDataForDrawing()
+	protected String getActivityTitle()
+	{
+		String title = "All Stories";
+    	if (filterSelected == MENU_OPEN)
+    		title = "Defined/In-Progress Stories";
+    	else if (filterSelected == MENU_COMPLETED)
+    		title = "Completed/Accepted Stories";
+    	
+    	return title;
+	}
+	
+	protected String getLine1(Artifact artifact)
     {
-		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-        
-		for (Story story: stories)
-    	{
-        	Map<String, String> row = new HashMap<String, String>();
-        	row.put(LIST_ITEM_LINE1, story.getName());
-        	row.put(LIST_ITEM_LINE2, story.getFormattedID() + " (" + story.getStatus() + ")");
-        	data.add(row);
-        }
-        
-        return data;
+    	return artifact.getName();
     }
+    
+    protected String getLine2(Artifact artifact)
+    {
+    	return artifact.getFormattedID() + " (" + ((Story)artifact).getStatus() + ")";
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, MENU_OPEN, 0, "Open");//.setIcon(android.R.drawable.ic_menu_revert);
+        menu.add(0, MENU_COMPLETED, 1, "Completed");//.setIcon(android.R.drawable.ic_menu_search);
+        menu.add(0, MENU_ALL, 2, "All");//;.setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(0, MENU_REFRESH, 3, "Refresh");//.setIcon(android.R.drawable.);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) 
+        {
+	        case MENU_OPEN:
+	        case MENU_COMPLETED:
+	        case MENU_ALL:
+	        	filterSelected = item.getItemId(); // remember the filter
+	        	break;
+	        case MENU_REFRESH:
+	        	stories = null; // force refresh
+		        break;
+        }
+        refreshData();
+        return super.onOptionsItemSelected(item);
+    }
+
 }

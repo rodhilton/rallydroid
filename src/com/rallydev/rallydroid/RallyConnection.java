@@ -27,6 +27,7 @@ public class RallyConnection {
 	private String userName;
 	private String password;
 	private User user;
+	private Iteration iteration;
 	public final String domain = "rally1.rallydev.com";
 	public final String apiVersion = "1.15";
 	
@@ -37,30 +38,24 @@ public class RallyConnection {
 	}
 	
 	public User getCurrentUser() {
-		if(user != null) 
-			return user;
-		
-        try { 
-        	Log.i("user", "Retrieving current user");
-			
-        	JSONObject adHocQuery = new JSONObject();
-        	adHocQuery.put("#user", "/user");
-        	adHocQuery.put("userName", "${#user.DisplayName}");
-        	adHocQuery.put("subscriptionName", "${#user.Subscription.Name}");
-        	
-	        JSONObject userObject = getAdHocResult(adHocQuery);
-	        if (userObject == null)
-	        {
-	        	return null;
+		if (user == null) { 
+			try { 
+	        	Log.i("user", "Retrieving current user");
+				
+	        	JSONObject adHocQuery = new JSONObject();
+	        	adHocQuery.put("#user", "/user");
+	        	adHocQuery.put("userName", "${#user.DisplayName}");
+	        	adHocQuery.put("subscriptionName", "${#user.Subscription.Name}");
+	        	
+		        JSONObject userObject = getAdHocResult(adHocQuery);
+		        if (userObject != null)
+		        	user = new User(userObject.getString("userName"), userObject.getString("subscriptionName"));
+	        }catch(Exception e) {
+	        	Log.e("user", e.toString());
 	        }
-	        
-	        user = new User(userObject.getString("userName"), userObject.getString("subscriptionName"));
-	        return user;
-        }catch(Exception e) {
-
-        	Log.e("user", e.toString());
-        	return null;
-        }
+		}
+		
+        return user;
 	}
 	
 	public List<Story> getStoriesForCurrentIteration() {
@@ -92,10 +87,17 @@ public class RallyConnection {
         }
 	}
 	
-	public List<Artifact> getMyTasks() {
-		
-		String query = "((Owner = " + this.userName + ") and (State != Completed))";
-        String url = getApiUrlBase() + "/task.js?query=" + URLEncoder.encode(query) + "&fetch=true&pretty=true";
+	public List<Artifact> listAllMyTasks() {
+		String iterClause = "";
+		Iteration it = getCurrentIteration();
+		if (it != null)
+			iterClause = "and (Iteration.Oid = " + it.getOid() + ")";
+		return listTasks("((Owner = " + this.userName + ") " + iterClause + ")");
+	}
+	
+	public List<Artifact> listTasks(String query) {			
+	
+		String url = getApiUrlBase() + "/task.js?query=" + URLEncoder.encode(query) + "&fetch=true&pretty=true";
         List<Artifact> ret = new ArrayList<Artifact>();
         try
         {
@@ -106,7 +108,7 @@ public class RallyConnection {
 			    ret.add(new Artifact(object));
 		    }
         }catch(Exception e) {
-        
+        	Log.e("task", "Error retrieving tasks " + e.toString());
         }
         return ret;
 	}
@@ -161,22 +163,27 @@ public class RallyConnection {
 	}
 	
 	public Iteration getCurrentIteration() {
-		if (this.user == null) 
+		if (user == null) 
 		{
 			Log.e("iteration", "Tried to get current iteration but user was null (probably not logged in).");
 			return null;
 		}
 
-        try { 
-	        JSONObject adHocQuery = new JSONObject();
-	        adHocQuery.put("iteration", "/iteration:current");
-	         
-	        JSONObject iterationObject = getAdHocResult(adHocQuery).getJSONObject("iteration");
-	        
-	        return new Iteration(iterationObject);
-        }catch(Exception e) {
-        	Log.e("iteration", e.toString());
-        	return null;
-        }
+		if (iteration == null) {
+			try { 
+		        JSONObject adHocQuery = new JSONObject();
+		        adHocQuery.put("iteration", "/iteration:current");
+		        JSONObject iterationObject = getAdHocResult(adHocQuery).getJSONObject("iteration");
+		        
+		        String name = iterationObject.getString("Name");
+		        int oid = iterationObject.getInt("ObjectID");
+		        
+		        iteration = new Iteration(name, oid);
+	        }catch(Exception e) {
+	        	Log.e("iteration", e.toString());
+	        }
+		}
+		
+		return iteration;
 	}
 }

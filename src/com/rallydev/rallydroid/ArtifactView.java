@@ -16,10 +16,7 @@
   
 package com.rallydev.rallydroid;
 
-import org.json.JSONObject;
-
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.rallydev.rallydroid.dto.Artifact;
 
