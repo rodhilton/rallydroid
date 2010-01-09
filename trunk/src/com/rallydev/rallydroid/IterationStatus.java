@@ -19,8 +19,10 @@ package com.rallydev.rallydroid;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Dialog;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.rallydev.rallydroid.dto.Artifact;
 import com.rallydev.rallydroid.dto.Story;
@@ -32,7 +34,7 @@ public class IterationStatus extends RallyListActivity {
     private final int MENU_REFRESH = 10;
     private int filterSelected = MENU_OPEN;
 
-	private List<Story> stories;
+    private List<Story> stories;
     
 	protected List<Artifact> loadData()
 	{
@@ -101,5 +103,33 @@ public class IterationStatus extends RallyListActivity {
         refreshData();
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+	protected int getDetailViewResId()
+    {
+    	return R.layout.view_story;
+    }
+
+	@Override
+	protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {
+		Story selectedStory = (Story)selectedItem;
+		dialog.setTitle(selectedStory.getFormattedID());
+		
+    	String description = selectedStory.getString("Description");
+    	String planEstimate = selectedStory.getString("PlanEstimate");
+    	String estimate=selectedStory.getString("TaskEstimateTotal");
+    	String todo=selectedStory.getString("TaskRemainingTotal");
+    	String actuals=selectedStory.getString("TaskActualTotal");
+    	boolean blocked=selectedStory.getBoolean("Blocked");
+    	String state = selectedStory.getStatus() + " " + (blocked ? "(BLOCKED)" : "(Not blocked)");
+    	
+		((TextView)dialog.findViewById(R.id.story_nameView)).setText(selectedStory.getName());
+		((TextView)dialog.findViewById(R.id.story_descriptionView)).setText(description);
+    	((TextView)dialog.findViewById(R.id.story_stateView)).setText(state);
+    	((TextView)dialog.findViewById(R.id.plan_estimateView)).setText(planEstimate);
+    	((TextView)dialog.findViewById(R.id.task_estimateView)).setText(estimate);
+    	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
+    	((TextView)dialog.findViewById(R.id.task_actualView)).setText(actuals);
+	}
 
 }

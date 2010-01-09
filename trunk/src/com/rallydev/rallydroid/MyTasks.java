@@ -22,30 +22,22 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.rallydev.rallydroid.dto.Artifact;
 
 public class MyTasks extends RallyListActivity {
-	private static final int DETAIL_DIALOG=1;
 	private final int MENU_OPEN = 1;
     private final int MENU_COMPLETED = 2;
     private final int MENU_ALL = 3;
     private final int MENU_REFRESH = 10;
     private int filterSelected = MENU_OPEN;
 
-    private Artifact selectedTask;
-	private List<Artifact> tasks;
+    private List<Artifact> tasks;
 
     public List<Artifact> loadData()
 	{
@@ -91,21 +83,6 @@ public class MyTasks extends RallyListActivity {
     }
 	
 	@Override
-	protected void PostCreate()
-	{
-		ListView myListView = (ListView) findViewById(getListViewResId());
-		myListView.setOnItemClickListener(new OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> arg0, View arg1, int index,
-					long arg3) {				
-				selectedTask = getItemAt(index);
-				showDialog(DETAIL_DIALOG);
-			}
-        	
-        });
-	}
-		
-	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_OPEN, 0, "Open");//.setIcon(android.R.drawable.ic_menu_revert);
         menu.add(0, MENU_COMPLETED, 1, "Completed");//.setIcon(android.R.drawable.ic_menu_search);
@@ -132,41 +109,29 @@ public class MyTasks extends RallyListActivity {
     }
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch(id) {
-			case DETAIL_DIALOG:
-				LayoutInflater li = LayoutInflater.from(this);
-				View taskView = li.inflate(R.layout.view_task, null);
-				
-				AlertDialog.Builder taskDialog = new AlertDialog.Builder(this);
-				taskDialog.setTitle("Detail View");
-				taskDialog.setView(taskView);
-				return taskDialog.create();
-		}
-		return null;
+	protected int getDetailViewResId()
+	{ 
+		return R.layout.view_task;
 	}
 
 	@Override
-	protected void onPrepareDialog(int id, Dialog dialog) {
-		switch(id) {
-			case DETAIL_DIALOG:
-				dialog.setTitle(selectedTask.getFormattedID());
-				
-	        	String description = selectedTask.getString("Description");
-	        	String estimate=selectedTask.getString("Estimate");
-	        	String todo=selectedTask.getString("ToDo");
-	        	String actuals=selectedTask.getString("Actuals");
-	        	boolean blocked=selectedTask.getBoolean("Blocked");
-	        	String state = selectedTask.getString("State") + " " + (blocked ? "(BLOCKED)" : "(Not blocked)");
-	        	
-				((TextView)dialog.findViewById(R.id.task_nameView)).setText(selectedTask.getName());
-				((TextView)dialog.findViewById(R.id.story_nameView)).setText(getTaskStoryName(selectedTask));
-				((TextView)dialog.findViewById(R.id.task_descriptionView)).setText(description);
-	        	((TextView)dialog.findViewById(R.id.task_stateView)).setText(state);
-	        	((TextView)dialog.findViewById(R.id.task_estimateView)).setText(estimate);
-	        	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
-	        	((TextView)dialog.findViewById(R.id.task_actualView)).setText(actuals);
-		}
+	protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {
+		dialog.setTitle(selectedItem.getFormattedID());
+		
+    	String description = selectedItem.getString("Description");
+    	String estimate=selectedItem.getString("Estimate");
+    	String todo=selectedItem.getString("ToDo");
+    	String actuals=selectedItem.getString("Actuals");
+    	boolean blocked=selectedItem.getBoolean("Blocked");
+    	String state = selectedItem.getString("State") + " " + (blocked ? "(BLOCKED)" : "(Not blocked)");
+    	
+		((TextView)dialog.findViewById(R.id.task_nameView)).setText(selectedItem.getName());
+		((TextView)dialog.findViewById(R.id.story_nameView)).setText(getTaskStoryName(selectedItem));
+		((TextView)dialog.findViewById(R.id.task_descriptionView)).setText(description);
+    	((TextView)dialog.findViewById(R.id.task_stateView)).setText(state);
+    	((TextView)dialog.findViewById(R.id.task_estimateView)).setText(estimate);
+    	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
+    	((TextView)dialog.findViewById(R.id.task_actualView)).setText(actuals);
 	}
 	
 	private String getTaskStoryName(Artifact task)
