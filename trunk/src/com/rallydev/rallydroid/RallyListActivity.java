@@ -52,7 +52,11 @@ public abstract class RallyListActivity extends ListActivity {
 		
 		PrepareItemClickHandler();
 		
+		PostCreate();
+		
 		refreshData();
+		
+		registerForContextMenu(getListView());
 	}
 	
 	private void PrepareItemClickHandler()
@@ -62,11 +66,16 @@ public abstract class RallyListActivity extends ListActivity {
 
 			public void onItemClick(AdapterView<?> arg0, View arg1, int index,
 					long arg3) {				
-				selectedItem = getItemAt(index);
-				showDialog(DETAIL_DIALOG);
+				ShowDetailForItemAt(index);
 			}
 	        	
 	    });
+	}
+	
+	protected void ShowDetailForItemAt(int index)
+	{
+		selectedItem = getItemAt(index);
+		showDialog(DETAIL_DIALOG);
 	}
 	
 	@Override
@@ -162,6 +171,8 @@ public abstract class RallyListActivity extends ListActivity {
     	    	mLoadingDialog.cancel();
         }
     };
+    
+    public void PostCreate() {}
     
     protected int getListViewResId() { return android.R.id.list; }
     
