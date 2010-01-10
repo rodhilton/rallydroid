@@ -16,54 +16,53 @@
   
 package com.rallydev.rallydroid;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rallydev.rallydroid.dto.Artifact;
 
-public class MyTasks extends TaskListActivity {
-	private final int MENU_OPEN = 1;
-    private final int MENU_COMPLETED = 2;
-    private final int MENU_ALL = 3;
-    private final int MENU_REFRESH = 10;
-    private int filterSelected = MENU_OPEN;
-
+public class StoryTasks extends TaskListActivity {
+	private final int MENU_REFRESH = 10;
+    private int storyOid;
     private List<Artifact> tasks;
+    public static final String STORY_OID_PARAM = "StoryOid";
+    
+    public void PostCreate() {
+        Bundle extras = getIntent().getExtras();
+        try
+        {
+        	storyOid = extras.getInt(STORY_OID_PARAM);
+        	if (storyOid == 0)
+        	{
+        		throw new IllegalArgumentException("StoryOid extra not found.");
+        	}
+        }
+        catch (Exception e)
+        {
+        	Log.e("tasks", "Error retrieving story for task activity: " + e.toString());
+        	new AlertDialog.Builder(this).setMessage("Could not retrieve story info.").show();
+        	finish();
+        }
+    }
 
     public List<Artifact> loadData()
 	{
     	if (tasks == null)
     	{
-    		tasks = getHelper().getRallyConnection().listAllMyTasks();
+    		tasks = getHelper().getRallyConnection().listTasksByStory(storyOid);
     	}
     	
-    	// add only the items that match the filter
-    	List<Artifact> ret = new ArrayList<Artifact>();
-    	for (Artifact task: tasks)
-    	{
-    		String state = task.getString("State");
-    		if ((filterSelected == MENU_COMPLETED && !state.equals("Completed"))
-    			|| (filterSelected == MENU_OPEN && state.equals("Completed")))
-    			continue;
-    		
-    		ret.add(task);
-    	} 
-    	
-    	return ret;
+    	return tasks;
 	}
     
     protected String getActivityTitle()
 	{
-    	String title = "All My Tasks";
-    	if (filterSelected == MENU_OPEN)
-    		title = "My Defined/In-Progress Tasks";
-    	else if (filterSelected == MENU_COMPLETED)
-    		title = "My Completed Tasks";
-    	
-    	return title;
+    	return "Story Tasks";
 	}
     
     protected String getLine1(Artifact artifact)
@@ -73,14 +72,11 @@ public class MyTasks extends TaskListActivity {
     
     protected String getLine2(Artifact artifact)
     {
-    	return getTaskStoryName(artifact);
+    	return artifact.getFormattedID() + " (" + artifact.getString("State") + ")";
     }
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_OPEN, 0, "Open");//.setIcon(android.R.drawable.ic_menu_revert);
-        menu.add(0, MENU_COMPLETED, 1, "Completed");//.setIcon(android.R.drawable.ic_menu_search);
-        menu.add(0, MENU_ALL, 2, "All");//;.setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(0, MENU_REFRESH, 3, "Refresh");//.setIcon(android.R.drawable.);
         return super.onCreateOptionsMenu(menu);
     }
@@ -89,11 +85,6 @@ public class MyTasks extends TaskListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) 
         {
-	        case MENU_OPEN:
-	        case MENU_COMPLETED:
-	        case MENU_ALL:
-	        	filterSelected = item.getItemId(); // remember the filter
-	        	break;
 	        case MENU_REFRESH:
 	        	tasks = null; // force refresh
 		        break;

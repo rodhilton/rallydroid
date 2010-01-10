@@ -12,6 +12,7 @@
             </intent-filter>
         </activity>
     	<activity android:name=".MyTasks" android:exported="true" android:label="My Tasks" ></activity>
+		<activity android:name=".StoryTasks" android:exported="true" android:label="Story Tasks" ></activity>
 		<activity android:name=".Settings"></activity>
 		<activity android:name=".IterationStatus" android:label="Iteration Status"></activity>
 		<activity android:name=".ArtifactView"></activity>

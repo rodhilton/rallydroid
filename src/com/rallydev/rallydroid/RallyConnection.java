@@ -58,6 +58,31 @@ public class RallyConnection {
         return user;
 	}
 	
+	public Iteration getCurrentIteration() {
+		if (user == null) 
+		{
+			Log.e("iteration", "Tried to get current iteration but user was null (probably not logged in).");
+			return null;
+		}
+
+		if (iteration == null) {
+			try { 
+		        JSONObject adHocQuery = new JSONObject();
+		        adHocQuery.put("iteration", "/iteration:current");
+		        JSONObject iterationObject = getAdHocResult(adHocQuery).getJSONObject("iteration");
+		        
+		        String name = iterationObject.getString("Name");
+		        int oid = iterationObject.getInt("ObjectID");
+		        
+		        iteration = new Iteration(name, oid);
+	        }catch(Exception e) {
+	        	Log.e("iteration", e.toString());
+	        }
+		}
+		
+		return iteration;
+	}
+	
 	public List<Story> getStoriesForCurrentIteration() {
 		
         try { 
@@ -87,12 +112,16 @@ public class RallyConnection {
         }
 	}
 	
+	public List<Artifact> listTasksByStory(int storyOid) {
+		return listTasks("(WorkProduct.Oid = " + storyOid + ")");
+	}
+	
 	public List<Artifact> listAllMyTasks() {
-		String iterClause = "";
+		String query = "(Owner = " + this.userName + ")";
 		Iteration it = getCurrentIteration();
 		if (it != null)
-			iterClause = "and (Iteration.Oid = " + it.getOid() + ")";
-		return listTasks("((Owner = " + this.userName + ") " + iterClause + ")");
+			query = "(" + query + " and (Iteration.Oid = " + it.getOid() + "))";
+		return listTasks(query);
 	}
 	
 	public List<Artifact> listTasks(String query) {			
@@ -160,30 +189,5 @@ public class RallyConnection {
 	        new AuthScope(null, 443),
 	        new UsernamePasswordCredentials(this.userName, this.password));
 		return httpclient;
-	}
-	
-	public Iteration getCurrentIteration() {
-		if (user == null) 
-		{
-			Log.e("iteration", "Tried to get current iteration but user was null (probably not logged in).");
-			return null;
-		}
-
-		if (iteration == null) {
-			try { 
-		        JSONObject adHocQuery = new JSONObject();
-		        adHocQuery.put("iteration", "/iteration:current");
-		        JSONObject iterationObject = getAdHocResult(adHocQuery).getJSONObject("iteration");
-		        
-		        String name = iterationObject.getString("Name");
-		        int oid = iterationObject.getInt("ObjectID");
-		        
-		        iteration = new Iteration(name, oid);
-	        }catch(Exception e) {
-	        	Log.e("iteration", e.toString());
-	        }
-		}
-		
-		return iteration;
 	}
 }

@@ -96,5 +96,4 @@ public class Artifact implements Serializable {
 	   * included here as a reminder of its importance.
 	   */
 	private static final long serialVersionUID = 7526471155622776140L;
-
 }

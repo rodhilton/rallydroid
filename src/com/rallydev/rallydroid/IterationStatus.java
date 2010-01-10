@@ -20,9 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.rallydev.rallydroid.dto.Artifact;
 import com.rallydev.rallydroid.dto.Story;
@@ -33,6 +39,10 @@ public class IterationStatus extends RallyListActivity {
     private final int MENU_ALL = 4;
     private final int MENU_REFRESH = 10;
     private int filterSelected = MENU_OPEN;
+    
+    private final int ITEM_MENU_DETAIL = 1;
+    private final int ITEM_MENU_TASKS = 2;
+    
 
     private List<Story> stories;
     
@@ -131,5 +141,37 @@ public class IterationStatus extends RallyListActivity {
     	((TextView)dialog.findViewById(R.id.task_todoView)).setText(todo);
     	((TextView)dialog.findViewById(R.id.task_actualView)).setText(actuals);
 	}
+	
+	@Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
+    {	
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	
+    	menu.add(0, ITEM_MENU_DETAIL, 0,  "Story Detail");
+    	menu.add(0, ITEM_MENU_TASKS, 0,  "Tasks");
+    }
+	
+	@Override
+    public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		int pos = info.position;
+		
+		switch (item.getItemId()) {
+			case ITEM_MENU_DETAIL:
+				ShowDetailForItemAt(pos);
+				break;
+			case ITEM_MENU_TASKS:
+				try {
+					Story story = (Story)getItemAt(pos);
+					Intent intent = new Intent(this, StoryTasks.class);
+					intent.putExtra(StoryTasks.STORY_OID_PARAM, story.getOid());
+					startActivity(intent);
+	            } catch (Exception e) {
+	                Log.e("story", "Error preparing task list activity: " + e.toString());
+	            }
+	            break;
+		}
+		return super.onContextItemSelected(item);
+    }
 
 }
