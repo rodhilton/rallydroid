@@ -32,7 +32,6 @@ public class PokerDisplay extends Activity {
        
 
         ImageView imageView = (ImageView) findViewById(R.id.picview);
-        Log.e("e","ass"+imageView);
         imageView.setImageResource(R.drawable.card2);
         
         Bundle extras = getIntent().getExtras();
