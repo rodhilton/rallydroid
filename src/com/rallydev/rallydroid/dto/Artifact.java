@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class Artifact implements Serializable {
+public class Artifact extends DomainObject implements Serializable {
 	private String formattedID;
 	private String ref;
 	private Integer oid;

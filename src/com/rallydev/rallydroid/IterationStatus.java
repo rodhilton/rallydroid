@@ -31,7 +31,10 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.rallydev.rallydroid.dto.Artifact;
+import com.rallydev.rallydroid.dto.DomainObject;
 import com.rallydev.rallydroid.dto.Story;
+
+import static com.rallydev.rallydroid.Util.stripHTML;
 
 public class IterationStatus extends RallyListActivity {
 	private final int MENU_OPEN = 1;
@@ -45,16 +48,17 @@ public class IterationStatus extends RallyListActivity {
     
 
     private List<Story> stories;
-    
-	protected List<Artifact> loadData()
+ 
+    @Override
+	protected List<DomainObject> loadData()
 	{
 		if (stories == null)
     	{
 			stories = getHelper().getRallyConnection().getStoriesForCurrentIteration();
     	}
     	
-    	List<Artifact> ret = new ArrayList<Artifact>();
-    	for (Artifact story: stories)
+    	List<DomainObject> ret = new ArrayList<DomainObject>();
+    	for (DomainObject story: stories)
     	{
     		String state = ((Story)story).getStatus();
     		if ((filterSelected == MENU_COMPLETED && !state.equals("Completed") && !state.equals("Accepted"))
@@ -78,14 +82,14 @@ public class IterationStatus extends RallyListActivity {
     	return title;
 	}
 	
-	protected String getLine1(Artifact artifact)
+	protected String getLine1(DomainObject artifact)
     {
-    	return artifact.getName();
+    	return ((Artifact)artifact).getName();
     }
     
-    protected String getLine2(Artifact artifact)
+    protected String getLine2(DomainObject artifact)
     {
-    	return artifact.getFormattedID() + " (" + ((Story)artifact).getStatus() + ")";
+    	return ((Artifact)artifact).getFormattedID() + " (" + ((Story)artifact).getStatus() + ")";
     }
     
     @Override
@@ -121,11 +125,11 @@ public class IterationStatus extends RallyListActivity {
     }
 
 	@Override
-	protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {
+	protected void PrepareDetailDialog(Dialog dialog, DomainObject selectedItem) {
 		Story selectedStory = (Story)selectedItem;
 		dialog.setTitle(selectedStory.getFormattedID());
 		
-    	String description = selectedStory.getString("Description");
+    	String description = stripHTML(selectedStory.getString("Description"));
     	String planEstimate = selectedStory.getString("PlanEstimate");
     	String estimate=selectedStory.getString("TaskEstimateTotal");
     	String todo=selectedStory.getString("TaskRemainingTotal");

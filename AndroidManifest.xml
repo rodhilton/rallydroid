@@ -18,8 +18,9 @@
 		<activity android:name=".ArtifactView"></activity>
 		<activity android:name=".PokerSelection" android:exported="true" android:label="Planning Poker - RallyDroid"></activity>
 		<activity android:name=".PokerDisplay"></activity>
-	</application>
+	<activity android:name=".RecentActivity" android:label="Recent Activity"></activity>
+</application>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5" />
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="8" />
 
 </manifest> 

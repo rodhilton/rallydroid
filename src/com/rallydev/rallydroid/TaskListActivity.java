@@ -24,6 +24,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.rallydev.rallydroid.dto.Artifact;
+import com.rallydev.rallydroid.dto.DomainObject;
 
 public abstract class TaskListActivity extends RallyListActivity {
 	    
@@ -34,7 +35,8 @@ public abstract class TaskListActivity extends RallyListActivity {
 	}
 
 	@Override
-	protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {
+	protected void PrepareDetailDialog(Dialog dialog, DomainObject selected) {
+		Artifact selectedItem = (Artifact)selected;
 		dialog.setTitle(selectedItem.getFormattedID());
 		
     	String description = selectedItem.getString("Description");
