@@ -22,6 +22,12 @@ android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:text="Iteration Status"
 />
+<Button
+android:id="@+id/recentActivityButton"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:text="Recent Activity"
+/>
 
 
 </LinearLayout> 

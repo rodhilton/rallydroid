@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rallydev.rallydroid.dto.Artifact;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -21,6 +19,8 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.rallydev.rallydroid.dto.DomainObject;
+
 public abstract class RallyListActivity extends ListActivity {
 	
 	static final protected String LIST_ITEM_LINE1 = "line1";
@@ -31,8 +31,8 @@ public abstract class RallyListActivity extends ListActivity {
 	private ProgressDialog mLoadingDialog;
     private final Handler mHandler = new Handler();
     private String mErrorMsg = "";
-    private List<Artifact> items;
-    private Artifact selectedItem;
+    private List<DomainObject> items;
+    private DomainObject selectedItem;
 	
 	private ActivityHelper helper;
 	protected ActivityHelper getHelper()
@@ -116,7 +116,7 @@ public abstract class RallyListActivity extends ListActivity {
     	t.start();
 	}
 	
-	protected Artifact getItemAt(int index)
+	protected DomainObject getItemAt(int index)
 	{
 		if (items == null)
 			return null;
@@ -124,7 +124,7 @@ public abstract class RallyListActivity extends ListActivity {
 		return items.get(index);
 	}
 	
-	protected Artifact getSelectedItem()
+	protected DomainObject getSelectedItem()
 	{
 		return selectedItem;
 	}
@@ -146,7 +146,7 @@ public abstract class RallyListActivity extends ListActivity {
         	{
         		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
         	        
-    			for (Artifact item: items)
+    			for (DomainObject item: items)
     	    	{
     	        	Map<String, String> row = new HashMap<String, String>();
     	        	row.put(LIST_ITEM_LINE1, getLine1(item));
@@ -180,13 +180,13 @@ public abstract class RallyListActivity extends ListActivity {
     
     protected int getDetailViewResId() { return 0; }
     
-    protected void PrepareDetailDialog(Dialog dialog, Artifact selectedItem) {}
+    protected void PrepareDetailDialog(Dialog dialog, DomainObject selectedItem) {}
     
     protected int getLayoutResId() { return R.layout.artifactlist; };
     
     protected abstract String getActivityTitle();
 
-    protected abstract List<Artifact> loadData();
-    protected abstract String getLine1(Artifact artifact);
-    protected abstract String getLine2(Artifact artifact);
+    protected abstract List<DomainObject> loadData();
+    protected abstract String getLine1(DomainObject artifact);
+    protected abstract String getLine2(DomainObject artifact);
 }

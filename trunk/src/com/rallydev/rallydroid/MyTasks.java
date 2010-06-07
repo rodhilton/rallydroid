@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rallydev.rallydroid.dto.Artifact;
+import com.rallydev.rallydroid.dto.DomainObject;
 
 public class MyTasks extends TaskListActivity {
 	private final int MENU_OPEN = 1;
@@ -31,9 +32,9 @@ public class MyTasks extends TaskListActivity {
     private final int MENU_REFRESH = 10;
     private int filterSelected = MENU_OPEN;
 
-    private List<Artifact> tasks;
+    private List<DomainObject> tasks;
 
-    public List<Artifact> loadData()
+    public List<DomainObject> loadData()
 	{
     	if (tasks == null)
     	{
@@ -41,8 +42,8 @@ public class MyTasks extends TaskListActivity {
     	}
     	
     	// add only the items that match the filter
-    	List<Artifact> ret = new ArrayList<Artifact>();
-    	for (Artifact task: tasks)
+    	List<DomainObject> ret = new ArrayList<DomainObject>();
+    	for (DomainObject task: tasks)
     	{
     		String state = task.getString("State");
     		if ((filterSelected == MENU_COMPLETED && !state.equals("Completed"))
@@ -66,14 +67,14 @@ public class MyTasks extends TaskListActivity {
     	return title;
 	}
     
-    protected String getLine1(Artifact artifact)
+    protected String getLine1(DomainObject artifact)
     {
-    	return artifact.getName();
+    	return ((Artifact)artifact).getName();
     }
     
-    protected String getLine2(Artifact artifact)
+    protected String getLine2(DomainObject artifact)
     {
-    	return getTaskStoryName(artifact);
+    	return getTaskStoryName((Artifact)artifact);
     }
 	
 	@Override

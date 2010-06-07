@@ -18,6 +18,9 @@ package com.rallydev.rallydroid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Util {
 
@@ -42,4 +45,20 @@ public class Util {
 	public static String trim(String string) {
 		return trim(string, 100);
 	}
+	
+	public static String stripHTML(String htmlString) {
+      String nonHtmlString = htmlString.replaceAll("\\<.*?\\>", "");
+      nonHtmlString = nonHtmlString.replaceAll("<br/>", "\n");
+      nonHtmlString = nonHtmlString.replaceAll("&#39;", "\'");
+      nonHtmlString = nonHtmlString.replaceAll("&quot;", "\"");
+      nonHtmlString = nonHtmlString.replaceAll("&nbsp;", " ");      
+      return nonHtmlString;
+  }
+
+	public static Date utcToDate(String utcString) throws ParseException {
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+		return formatter.parse(utcString);
+	}
+	
 }

@@ -52,6 +52,9 @@ public class RallyMain extends RallyActivity {
         Button iterationStatusButton = (Button) findViewById(R.id.iterationStatusButton);
         iterationStatusButton.setOnClickListener(buildActivityChangeListener(IterationStatus.class));
         
+        Button recentActivityButton = (Button) findViewById(R.id.recentActivityButton);
+        recentActivityButton.setOnClickListener(buildActivityChangeListener(RecentActivity.class));
+        
         ShowHideButtons();
 	}
     
@@ -61,6 +64,7 @@ public class RallyMain extends RallyActivity {
     	TextView statusView = (TextView) findViewById(R.id.main_statusLabel);
     	Button myTasksButton = (Button) findViewById(R.id.myTasksButton);
     	Button iterationStatusButton = (Button) findViewById(R.id.iterationStatusButton);
+    	Button recentActivityButton = (Button) findViewById(R.id.recentActivityButton);
         
         if(user == null) {
         	statusView.setText("Not logged in");
@@ -70,6 +74,7 @@ public class RallyMain extends RallyActivity {
         
         myTasksButton.setEnabled(user != null);
     	iterationStatusButton.setEnabled(user != null);
+    	recentActivityButton.setEnabled(user != null);
     }
 
     private View.OnClickListener buildActivityChangeListener(final Class<? extends Activity> clazz) {

@@ -25,11 +25,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rallydev.rallydroid.dto.Artifact;
+import com.rallydev.rallydroid.dto.DomainObject;
 
 public class StoryTasks extends TaskListActivity {
 	private final int MENU_REFRESH = 10;
     private int storyOid;
-    private List<Artifact> tasks;
+    private List<DomainObject> tasks;
     public static final String STORY_OID_PARAM = "StoryOid";
     
     public void PostCreate() {
@@ -50,7 +51,7 @@ public class StoryTasks extends TaskListActivity {
         }
     }
 
-    public List<Artifact> loadData()
+    public List<DomainObject> loadData()
 	{
     	if (tasks == null)
     	{
@@ -65,14 +66,14 @@ public class StoryTasks extends TaskListActivity {
     	return "Story Tasks";
 	}
     
-    protected String getLine1(Artifact artifact)
+    protected String getLine1(DomainObject artifact)
     {
-    	return artifact.getName();
+    	return ((Artifact)artifact).getName();
     }
     
-    protected String getLine2(Artifact artifact)
+    protected String getLine2(DomainObject artifact)
     {
-    	return artifact.getFormattedID() + " (" + artifact.getString("State") + ")";
+    	return ((Artifact)artifact).getFormattedID() + " (" + artifact.getString("State") + ")";
     }
 	
 	@Override
