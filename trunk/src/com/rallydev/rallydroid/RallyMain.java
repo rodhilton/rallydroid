@@ -54,9 +54,13 @@ public class RallyMain extends RallyActivity {
         
         Button recentActivityButton = (Button) findViewById(R.id.recentActivityButton);
         recentActivityButton.setOnClickListener(buildActivityChangeListener(RecentActivity.class));
-        
+ 	}
+    
+    public void onStart() {
+        super.onStart();
+
         ShowHideButtons();
-	}
+   }
     
     private void ShowHideButtons()
     {
